@@ -20,21 +20,22 @@ export const SpaceBackground = () => {
             Texture.from("./src/assets/bgs/1024/Blue Nebula/Blue_Nebula_01-1024x1024.png"),
             Texture.from("./src/assets/bgs/1024/Green Nebula/Green_Nebula_02-1024x1024.png"),
             Texture.from("./src/assets/bgs/1024/Purple Nebula/Purple_Nebula_01-1024x1024.png"),
+            Texture.from("./src/assets/bgs/1024/Blue Nebula/Blue_Nebula_08-1024x1024.png"),
+            Texture.from("./src/assets/bgs/1024/Green Nebula/Green_Nebula_07-1024x1024.png"),
         ],
         []
     );
     const nebulaMaskTextures = useMemo(
         () => [
+            Texture.from("./src/assets/masks/pnoise4.png"),
             Texture.from("./src/assets/masks/pnoise1.png"),
             Texture.from("./src/assets/masks/pnoise2.png"),
             Texture.from("./src/assets/masks/pnoise3.png"),
+            Texture.from("./src/assets/masks/pnoise5.png"),
         ],
         []
     );
-    const nebulaMasks = useMemo(
-        () => [new Sprite(nebulaMaskTextures[0]), new Sprite(nebulaMaskTextures[1]), new Sprite(nebulaMaskTextures[2])],
-        []
-    );
+    const nebulaMasks = useMemo(() => nebulaMaskTextures.map((texture) => new Sprite(texture)), []);
     useEffect(() => {
         nebulaMasks.forEach((mask) => {
             mask.anchor.set(0.5);
@@ -48,13 +49,13 @@ export const SpaceBackground = () => {
             const nebulaDefaultScale = 24;
             mask.x = width / 2 - x / (z + nebulasZ[index]);
             mask.y = height / 2 - y / (z + nebulasZ[index]);
-            mask.scale.set(nebulaDefaultScale * 1 / (z + nebulasZ[index]));
+            mask.scale.set(nebulaDefaultScale / (z + nebulasZ[index]));
             //mask.width = width;
             //mask.height = height;
         });
     });
     const starfieldZ = 17;
-    const nebulasZ = useMemo(() => [16, 15.5, 15], []);
+    const nebulasZ = useMemo(() => [16, 15.5, 15, 14.5, 14], []);
 
     return (
         <>
@@ -68,14 +69,14 @@ export const SpaceBackground = () => {
                     }}
                     width={width}
                     height={height}
-                    tileScale={4 * 1 / (z + starfieldZ)}
+                    tileScale={(4 * 1) / (z + starfieldZ)}
                 />
                 {nebulaTextures.map((texture, index) => (
                     <TilingSpriteComponent
                         anchor={0.5}
                         key={index}
                         texture={texture}
-                        alpha={1.0}
+                        alpha={0.7}
                         tileScale={1 / (z + nebulasZ[index])}
                         width={width}
                         height={height}
