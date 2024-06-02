@@ -67,7 +67,7 @@ export const SpaceBackgroundLayer: FC<SpaceBackgroundLayerProps> = ({ texture, z
 export const SpaceBackground = () => {
     const starfield = useMemo(() => {
         return ({
-            texture: Texture.from("./src/assets/bgs/1024/Starfields/Starfield_01-1024x1024.png"),
+            texture: Texture.from("./assets/bgs/1024/Starfields/Starfield_01-1024x1024.png"),
             z: -9,
             scale: 4
         })
@@ -75,29 +75,29 @@ export const SpaceBackground = () => {
 
     const nebulas = [
         {
-            texture: Texture.from("./src/assets/bgs/1024/Blue Nebula/Blue_Nebula_01-1024x1024.png"),
+            texture: Texture.from("./assets/bgs/1024/Blue Nebula/Blue_Nebula_01-1024x1024.png"),
             z: -8,
-            mask: Texture.from("./src/assets/masks/pnoise5.png"),
+            mask: Texture.from("./assets/masks/pnoise5.png"),
         },
         {
-            texture: Texture.from("./src/assets/bgs/1024/Green Nebula/Green_Nebula_02-1024x1024.png"),
+            texture: Texture.from("./assets/bgs/1024/Green Nebula/Green_Nebula_02-1024x1024.png"),
             z: -7.8,
-            mask: Texture.from("./src/assets/masks/pnoise1.png"),
+            mask: Texture.from("./assets/masks/pnoise1.png"),
         },
         {
-            texture: Texture.from("./src/assets/bgs/1024/Purple Nebula/Purple_Nebula_01-1024x1024.png"),
+            texture: Texture.from("./assets/bgs/1024/Purple Nebula/Purple_Nebula_01-1024x1024.png"),
             z: -7.6,
-            mask: Texture.from("./src/assets/masks/pnoise2.png"),
+            mask: Texture.from("./assets/masks/pnoise2.png"),
         },
         {
-            texture: Texture.from("./src/assets/bgs/1024/Blue Nebula/Blue_Nebula_08-1024x1024.png"),
+            texture: Texture.from("./assets/bgs/1024/Blue Nebula/Blue_Nebula_08-1024x1024.png"),
             z: -7.4,
-            mask: Texture.from("./src/assets/masks/pnoise3.png"),
+            mask: Texture.from("./assets/masks/pnoise3.png"),
         },
         {
-            texture: Texture.from("./src/assets/bgs/1024/Green Nebula/Green_Nebula_07-1024x1024.png"),
+            texture: Texture.from("./assets/bgs/1024/Green Nebula/Green_Nebula_07-1024x1024.png"),
             z: -7.2,
-            mask: Texture.from("./src/assets/masks/pnoise4.png"),
+            mask: Texture.from("./assets/masks/pnoise4.png"),
         },
     ]
 
