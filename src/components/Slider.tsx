@@ -69,6 +69,28 @@ export const Slider: FC<SliderProps> = ({
 
     const [sliderValue, setSliderValue] = useState(0);
 
+    useEffect(() => {
+        if (currentValue) {
+            if(max - min >= 0) {
+                if(currentValue < min) {
+                    setSliderValue(0);
+                } else if(currentValue > max) {
+                    setSliderValue(1);
+                } else {
+                    setSliderValue((currentValue - min) / (max - min));
+                }
+            } else {
+                if(currentValue > min) {
+                    setSliderValue(0);
+                } else if(currentValue < max) {
+                    setSliderValue(1);
+                } else {
+                    setSliderValue((currentValue - min) / (max - min));
+                }
+            }
+        }
+    }, [currentValue]);
+
     //const barX = boxCenter.x - barCenter.x;
     const barX =
         orientation == "horizontal"
@@ -162,15 +184,3 @@ export const Slider: FC<SliderProps> = ({
         </Container>
     );
 };
-
-//export const Slider = ({...orientation}: {
-//    width: number,
-//    height: number,
-//    x: number,
-//    y: number,
-//    min: number,
-//    max: number,
-//    setValue: (number) => void,
-//    orientation: SliderOrientation
-//}) => {
-//}

@@ -63,7 +63,7 @@ export const Game = () => {
     }, []);
 
     useTick(() => {
-        const movementSpeed = 1;
+        const movementSpeed = 10;
         if (moveUp) {
             setY(y - 1 * movementSpeed);
         }
