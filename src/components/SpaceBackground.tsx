@@ -8,64 +8,59 @@ export interface SpaceBackgroundLayerProps {
     texture: Texture;
     z: number;
     mask?: Texture;
+    scale?: number;
 }
 
-export const SpaceBackgroundLayer: FC<SpaceBackgroundLayerProps> = ({ texture, z, mask }) => {
+export const SpaceBackgroundLayer: FC<SpaceBackgroundLayerProps> = ({ texture, z, mask, scale }) => {
     const camera = useContext(CameraContext);
     const viewport = useContext(ViewportContext);
-    const maskSprite: Sprite | undefined = mask ? useMemo(() => Sprite.from(mask), [mask]) : undefined;
+    const maskSprite: Sprite | null = useMemo(() => mask ? Sprite.from(mask) : null, [mask]);
     const app = useApp();
 
     const distance = camera.z - z;
+    const layerScale = (scale ? scale : 1 ) / distance * camera.zoom;
 
     useEffect(() => {
         if(maskSprite) {
-            app.stage.addChild(maskSprite);
             maskSprite.anchor.set(0.5);
+
+            const container = new Container();
+            container.x = viewport.width / 2;
+            container.y = viewport.height / 2;
+
+            container.addChild(maskSprite)
+            app.stage.addChild(container);
         }
-    }, []);
+    }, [viewport.width, viewport.height]);
 
     useEffect(() => {
         if (maskSprite) {
-            maskSprite.scale.set((32 + z) / distance);
-            maskSprite.x = viewport.width / 2 - camera.x / distance;
-            maskSprite.y = viewport.height / 2 - camera.y / distance;
+            maskSprite.scale.set(((32 + z) / distance) * camera.zoom);
+            maskSprite.x = -camera.x / distance * camera.zoom;
+            maskSprite.y = -camera.y / distance * camera.zoom;
         }
-    }, [maskSprite, camera.x, camera.y, distance, z]);
+    }, [maskSprite, camera.x, camera.y, distance, z, camera.zoom]);
 
     return (
-        maskSprite ? 
-        <TilingSpriteComponent
-            mask={maskSprite}
-            texture={texture}
-            width={viewport.width}
-            height={viewport.height}
-            tileScale={{x: 1 / (camera.z - z), y: 1 / (camera.z - z)}}
-            anchor={0.5}
-            alpha={0.8}
+        <ContainerComponent
             x={viewport.width / 2}
             y={viewport.height / 2}
-            tilePosition={{
-                x: viewport.width / 2 - camera.x / distance,
-                y: viewport.height / 2 - camera.y / distance,
-            }}
-            blendMode={BLEND_MODES.ADD}
-        /> :
-        <TilingSpriteComponent
-            texture={texture}
-            width={viewport.width}
-            height={viewport.height}
-            tileScale={{x: 1 / distance, y: 1 / distance}}
-            anchor={0.5}
-            alpha={0.8}
-            x={viewport.width / 2}
-            y={viewport.height / 2}
-            tilePosition={{
-                x: viewport.width / 2 - camera.x / distance,
-                y: viewport.height / 2 - camera.y / distance,
-            }}
-            blendMode={BLEND_MODES.ADD}
-        />
+        >
+            <TilingSpriteComponent
+                mask={maskSprite}
+                texture={texture}
+                width={viewport.width}
+                height={viewport.height}
+                tileScale={{x: layerScale, y: layerScale}}
+                anchor={0.5}
+                alpha={0.8}
+                tilePosition={{
+                    x: viewport.width / 2 - camera.x / distance * camera.zoom,
+                    y: viewport.height / 2 - camera.y / distance * camera.zoom,
+                }}
+                blendMode={BLEND_MODES.ADD}
+            />
+        </ContainerComponent>
     );
 };
 
@@ -73,41 +68,42 @@ export const SpaceBackground = () => {
     const starfield = useMemo(() => {
         return ({
             texture: Texture.from("./src/assets/bgs/1024/Starfields/Starfield_01-1024x1024.png"),
-            z: -14.3
+            z: -9,
+            scale: 4
         })
     }, []);
 
     const nebulas = [
         {
             texture: Texture.from("./src/assets/bgs/1024/Blue Nebula/Blue_Nebula_01-1024x1024.png"),
-            z: -16,
+            z: -8,
             mask: Texture.from("./src/assets/masks/pnoise5.png"),
         },
         {
             texture: Texture.from("./src/assets/bgs/1024/Green Nebula/Green_Nebula_02-1024x1024.png"),
-            z: -15.5,
+            z: -7.8,
             mask: Texture.from("./src/assets/masks/pnoise1.png"),
         },
         {
             texture: Texture.from("./src/assets/bgs/1024/Purple Nebula/Purple_Nebula_01-1024x1024.png"),
-            z: -15,
+            z: -7.6,
             mask: Texture.from("./src/assets/masks/pnoise2.png"),
         },
         {
             texture: Texture.from("./src/assets/bgs/1024/Blue Nebula/Blue_Nebula_08-1024x1024.png"),
-            z: -14.5,
+            z: -7.4,
             mask: Texture.from("./src/assets/masks/pnoise3.png"),
         },
         {
             texture: Texture.from("./src/assets/bgs/1024/Green Nebula/Green_Nebula_07-1024x1024.png"),
-            z: -14,
+            z: -7.2,
             mask: Texture.from("./src/assets/masks/pnoise4.png"),
         },
     ]
 
     return (
         <>
-            <SpaceBackgroundLayer texture={starfield.texture} z={starfield.z} />
+            <SpaceBackgroundLayer texture={starfield.texture} z={starfield.z} scale={starfield.scale}/>
 
             {nebulas.map((nebula, index) => (
                 <SpaceBackgroundLayer
