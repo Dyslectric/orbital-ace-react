@@ -1,7 +1,7 @@
 import { Container, Graphics, Sprite } from "@pixi/react";
 import { BLEND_MODES, Texture } from "pixi.js";
 import { useCallback, useContext, useEffect } from "react";
-import { CameraContext } from "./Game";
+import { CameraContext } from "./Camera";
 
 export const CameraControlBox = ({x, y, width, height}) => {
     const { x: cameraX, y: cameraY, z, zoom } = useContext(CameraContext);

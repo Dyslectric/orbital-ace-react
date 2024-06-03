@@ -1,7 +1,7 @@
 import { Container as ContainerComponent, TilingSprite as TilingSpriteComponent, Sprite as SpriteComponent, render, useApp } from "@pixi/react";
 import { BLEND_MODES, Container, Sprite, Texture, TilingSprite } from "pixi.js";
 import React, { FC, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { CameraContext } from "./Game";
+import { CameraContext } from "./Camera";
 import { ViewportContext } from "./Viewport";
 
 export interface SpaceBackgroundLayerProps {
