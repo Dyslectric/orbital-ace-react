@@ -10,15 +10,15 @@ export type SliderOrientation = "vertical" | "horizontal";
 export interface SliderProps {
     boxWidth: number;
     boxHeight: number;
-    boxColor?: string;
+    boxColor?: string | number;
     barSize: number;
     barPadding: number;
-    barColor?: string;
+    barColor?: string | number;
     x: number;
     y: number;
     min: number;
     max: number;
-    steps: number;
+    steps?: number;
     orientation: SliderOrientation;
     currentValue?: number;
     setValue?: (number) => void;
@@ -53,7 +53,7 @@ export const Slider: FC<SliderProps> = ({
             orientation == "horizontal"
                 ? { barWidth: barSize, barHeight: boxHeight - barPadding * 2 }
                 : { barWidth: boxWidth - barPadding * 2, barHeight: barSize },
-        []
+        [],
     );
 
     const barCenter = {
@@ -71,18 +71,18 @@ export const Slider: FC<SliderProps> = ({
 
     useEffect(() => {
         if (currentValue) {
-            if(max - min >= 0) {
-                if(currentValue < min) {
+            if (max - min >= 0) {
+                if (currentValue < min) {
                     setSliderValue(0);
-                } else if(currentValue > max) {
+                } else if (currentValue > max) {
                     setSliderValue(1);
                 } else {
                     setSliderValue((currentValue - min) / (max - min));
                 }
             } else {
-                if(currentValue > min) {
+                if (currentValue > min) {
                     setSliderValue(0);
-                } else if(currentValue < max) {
+                } else if (currentValue < max) {
                     setSliderValue(1);
                 } else {
                     setSliderValue((currentValue - min) / (max - min));
@@ -110,7 +110,7 @@ export const Slider: FC<SliderProps> = ({
                 .drawRect(0, 0, boxWidth, boxHeight)
                 .endFill();
         },
-        [boxWidth, boxHeight]
+        [boxWidth, boxHeight],
     );
 
     const drawSliderBar = useCallback(
@@ -121,52 +121,66 @@ export const Slider: FC<SliderProps> = ({
                 .drawRect(barX, barY, barWidth, barHeight)
                 .endFill();
         },
-        [barSize, barPadding, barX, barY]
+        [barSize, barPadding, barX, barY],
     );
 
-    let activated = false;
+    let [activated, setActivated] = useState(false);
+    let [mouseInitPos, setMouseInitPos] = useState({ x: 0, y: 0 });
+    let [sliderInitPos, setSliderInitPos] = useState(sliderValue);
 
     const mouseDown = useCallback(
-        (event) => {
-            activated = true;
+        (event: FederatedMouseEvent) => {
+            setActivated(true);
+            setMouseInitPos({ x: event.x, y: event.y });
+            setSliderInitPos(sliderValue);
         },
-        [x, y]
+        [x, y, sliderValue],
     );
 
-    const mouseUp = useCallback(
-        (event) => {
-            activated = false;
-        },
-        [x, y]
-    );
+    const mouseUp = useCallback(() => {
+        setActivated(false);
+    }, []);
 
     const mouseMove = useCallback(
         (event: FederatedMouseEvent) => {
             if (activated) {
                 const { x: mouseX, y: mouseY } = event;
 
-                const localMouseX = mouseX - x;
-                const localMouseY = mouseY - y;
-
                 const range = endPixel - startPixel;
-                const value =
-                    orientation == "vertical"
-                        ? Math.max(0, Math.min(1, (localMouseY - (startPixel + barHeight / 2)) / range))
-                        : Math.max(0, Math.min(1, (localMouseX - (startPixel + barWidth / 2)) / range));
+                const movement =
+                    (orientation == "vertical" ? mouseY - mouseInitPos.y : mouseX - mouseInitPos.x) / range;
+                const value = sliderInitPos + movement;
 
-                setSliderValue(value);
-                if (setValue) {
-                    setValue(min + (max - min) * value);
+                if (value < 0) {
+                    setSliderValue(0);
+                    if (setValue) {
+                        setValue(min);
+                    }
+                } else if (value > 1) {
+                    setSliderValue(1);
+                    if (setValue) {
+                        setValue(max);
+                    }
+                } else {
+                    setSliderValue(value);
+                    if (setValue) {
+                        setValue(min + (max - min) * value);
+                    }
                 }
             }
         },
-        [x, y]
+        [x, y, sliderInitPos, mouseInitPos, activated],
     );
 
     useEffect(() => {
         app.stage.addEventListener("mousemove", mouseMove);
+        app.stage.addEventListener("mouseup", mouseUp);
         app.stage.interactive = true;
-    }, []);
+        return () => {
+            app.stage.removeEventListener("mousemove", mouseMove);
+            app.stage.removeEventListener("mouseup", mouseUp);
+        };
+    }, [mouseMove, mouseUp]);
 
     return (
         <Container
